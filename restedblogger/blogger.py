@@ -119,6 +119,17 @@ def getPassword(config,email):
     password = getpass.getpass("password for %s:" % email)
   return password
 
+defaultTemplate = """
+<html>
+  <head>
+    <title>$title</title>
+  </head>
+  <body>
+  <h1>$title</h1>
+  $body
+  </body>
+</html>
+"""
 
 def main():
   # Parsing command line options
@@ -127,8 +138,6 @@ def main():
   parser = optparse.OptionParser(usage=usage)
   parser.add_option("-c","--config",dest="config",default="restedblogger.conf",
                      help="Config File", metavar='CONFIG')
-  #parser.add_option("-e","--email",dest="email",default=None
-  #                   help="Email address for blogger account", metavar='EMAIL')
   parser.add_option("-v","--preview",dest="preview",action="store_true",default=False,
                     help="Preview the content in a browser and will not post the content to blogger.")
   parser.add_option("-P","--publish",dest="publish",action="store_true",default=False,
@@ -143,9 +152,11 @@ def main():
   # ------------------
   config = ConfigParser.ConfigParser()
   readFiles = config.read(options.config)
-  if not readFiles:
+  
+  # config is unused if in preview, so no need to bug the user
+  if not readFiles and not options.preview:
     config = createConfigDialog(options.config)
-  email = config.get('blogger','email')
+  email = options.preview or config.get('blogger','email')
 
   
   # Upload the post
@@ -156,9 +167,12 @@ def main():
     rst_title,body = rested.rest2html(rstText)
     
     if options.preview:
-      tplFile = open('template.html','r')
-      template = string.Template(tplFile.read())
-      tplFile.close()
+      if os.path.isfile('template.html'):
+        tplFile = open('template.html','r')
+        template = string.Template(tplFile.read())
+        tplFile.close()
+      else:
+        template = string.Template(defaultTemplate)
       htmlFileName = rstFileName + ".html"
       htmlFile = open(htmlFileName,'w+')
       htmlFile.write(template.safe_substitute(title=rst_title,body=body))
@@ -188,9 +202,9 @@ def main():
     ftemplate = open('template.html','w+')
     ftemplate.write(template)
     ftemplate.close()
-  # Or list the last n posts
-  # -----------------------------
 
+  # Or list the last n posts
+  # ------------------------
   else:
     blogger = Blogger(email,getPassword(config,email))
     for id,title,updated,content,entry in blogger.query():
