@@ -1,0 +1,38 @@
+What It Does
+------------
+
+Transfroms files in the reStructuredText format into HTML and post it to blogger.com. ::
+
+  $ restedblogger mypost.rst
+
+
+Installation
+------------
+
+To install from sources, it's the usual ::
+
+  $ python setup.py install
+
+
+Features
+--------
+
+  * Source code highlighting.
+  * Create or Update blog posts
+  * Control over the draft mode.
+  * Preview mode.
+  * Upload images (NO)
+  * Upload videos (NO)
+
+
+Extensions to reStrcturedText
+-----------------------------
+
+  * code-block directive with code highlighting. 
+  * Wikipedia reference
+
+
+
+Creating your own extensions
+----------------------------
+
