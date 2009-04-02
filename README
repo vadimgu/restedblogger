@@ -17,10 +17,10 @@ To install from sources, it's the usual ::
 Features
 --------
 
-  * Source code highlighting.
   * Create or Update blog posts
-  * Control over the draft mode.
-  * Preview mode.
+  * Publish posts.
+  * Preview post.
+  * Source code highlighting.
   * Upload images (NO)
   * Upload videos (NO)
 
@@ -28,11 +28,12 @@ Features
 Extensions to reStrcturedText
 -----------------------------
 
-  * code-block directive with code highlighting. 
+  * sourcecode directive with code highlighting. 
   * Wikipedia reference
 
 
 
 Creating your own extensions
 ----------------------------
+
 

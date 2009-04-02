@@ -1,18 +1,16 @@
 import sys
-import getpass
-import ConfigParser
 
 from docutils import core
 
 # custom directives and roles
-import pygments_code_block_directive
+import sourcecode_directive
 import wikipedia_reference_role
 
 
 def rest2html(source,initial_header_level=4):
   overrides = {'input_encoding': 'utf8',
-                 'doctitle_xform': 1,
-                 'initial_header_level': initial_header_level}
+               'doctitle_xform': 1,
+               'initial_header_level': initial_header_level}
   parts = core.publish_parts(source,
     writer_name='html', 
     settings_overrides=overrides)
