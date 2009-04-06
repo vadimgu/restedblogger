@@ -5,6 +5,7 @@ from docutils import core
 # custom directives and roles
 import sourcecode_directive
 import wikipedia_reference_role
+import gnuplot_directive
 
 
 def rest2html(source,initial_header_level=4):

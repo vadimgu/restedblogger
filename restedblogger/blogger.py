@@ -15,9 +15,10 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 
 import rested
+import imageservice
 
 class Blogger(object):
-  def __init__(self,email=None,password=None,blog_id=None,account_type='GOOGLE'):
+  def __init__(self,email=None,password=None,blog_id=None,account_type='GOOGLE',image_storage=None):
     blogger = service.GDataService(email,password)
     blogger.source = 'restedblogger'
     blogger.service = 'blogger'
@@ -27,6 +28,8 @@ class Blogger(object):
     
     self.blogger = blogger
     self._blog_id = blog_id
+    self.image_storage = image_storage(email,password)
+
 
   def get_blog_id(self):
     if self._blog_id:
@@ -56,10 +59,28 @@ class Blogger(object):
     query.feed = '/feeds/%s/posts/default/%s' % (self.blog_id,post_id)
     feed = self.blogger.GetFeed(query.ToUri())
     return feed.entry[0]
+  
+
+  def upload_images(self,html):
+    """Search for local images in the html, upload them and replace image src
+    with the uploaded url."""
+    soup = BeautifulSoup(html)
+    for image in soup.findAll('img',src=os.path.isfile):
+      links = self.image_storage.upload(image['src'],'Blogger')
+      #width,height,url = links[0]
+      # dealing with blogger limitation on image size.
+      for width,height,url in reversed(links):
+        if width <= 400 and height <= 400:
+          image['src'] = url
+          break
+            
+    return str(soup)
+    
 
   def createPost(self, title, content, publish=False):
     entry = gdata.GDataEntry()
     entry.title = atom.Title('xhtml', title)
+    content = self.upload_images(content)
     entry.content = atom.Content(content_type='html', text=content)
     if not publish:
       # switching the draft mode on
@@ -70,6 +91,7 @@ class Blogger(object):
   
   def updatePost(self,entry,content,publish=False):
     entry = self.blogger.Get(entry.GetSelfLink().href)
+    content = self.upload_images(content)
     entry.content = atom.Content(content_type='html', text=content)
     if publish: 
       # switching the draft mode off
@@ -180,7 +202,8 @@ def main():
       webbrowser.open("file://" + os.path.abspath(htmlFileName))
     
     else:  
-      blogger = Blogger(email,getPassword(config,email))
+      password = getPassword(config,email) 
+      blogger = Blogger(email,password,image_storage=imageservice.Picasa)
       # Update an existing post
       for id,title,updated,content,entry in blogger.query():
         if title == rst_title:
