@@ -34,7 +34,7 @@ First write a post in reStructuredText_ format by editing postA.rst. ::
   My Rested Post
   ==============
 
-  Text is power. I'm using this image to proove it:
+  Text is power. I'm using this image to prove it:
 
   .. image:: proof.jpg
 
@@ -96,15 +96,6 @@ Highlight source code using `Pygments <http://pygments.org>`_ ::
         start += 1
         yield start
 
-.. raw:: html
-
-  <pre><span style="color: rgb(0, 128, 0); font-weight: bold;">def</span> <span style="color: rgb(0, 0, 255);">count</span>(start):
-    <span style="color: rgb(0, 128, 0); font-weight: bold;">yield</span> start
-    <span style="color: rgb(0, 128, 0); font-weight: bold;">while</span> <span style="color: rgb(102, 102, 102);">1</span>:
-      start <span style="color: rgb(102, 102, 102);">+=</span> <span style="color: rgb(102, 102, 102);">1</span>
-      <span style="color: rgb(0, 128, 0); font-weight: bold;">yield</span> start
-  </pre>
-
 The css styles are inlined.
 
 Wikipedia Reference
@@ -114,13 +105,7 @@ You can reference Wikipedia articles like this: ::
 
   I played a game of :wkp:`chess` yesterday.
 
-This will put the link to the chess article. 
 
-.. raw:: html
-  
-  <p>
-  I played a game of <a class="reference external" href="http://en.wikipedia.org/wiki/chess">chess</a> yesterday.
-  </p>
   
 Plotting
 ~~~~~~~~
