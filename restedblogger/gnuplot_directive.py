@@ -18,10 +18,12 @@ from subprocess import Popen,PIPE
 
 def gnuplot_directive(name, arguments, options, content, lineno,
                        content_offset, block_text, state, state_machine):
+
+  width,height=400,400
   output = arguments[0]
   gnuplot_commands = content
   plot = Popen('gnuplot -persist', shell=True, bufsize=64, stdin=PIPE)
-  plot.stdin.write("set term png\n")
+  plot.stdin.write("set term png size %d,%d\n" % (width,height))
   plot.stdin.write("set output '%s'\n" % (output,))
   plot.stdin.write("\n".join(gnuplot_commands))
   plot.stdin.write("\nquit\n")
