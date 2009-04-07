@@ -20,20 +20,19 @@ Features
   * Create or Update blog posts
   * Publish posts.
   * Preview post.
-  * Source code highlighting.
-  * Upload images (NO)
+  * Upload related images to Picasa Web Albums
   * Upload videos (NO)
 
 
 Extensions to reStrcturedText
 -----------------------------
 
-  * sourcecode directive with code highlighting. 
+  * Code Highlighting 
   * Wikipedia reference
+  * Plot using gnuplot
 
 
 
-Creating your own extensions
-----------------------------
 
 
+  
