@@ -28,7 +28,10 @@ class Blogger(object):
     
     self.blogger = blogger
     self._blog_id = blog_id
-    self.image_storage = image_storage(email,password)
+    if image_storage:
+      self.image_storage = image_storage(email,password)
+    else:
+      self.image_storage = None
 
 
   def get_blog_id(self):
