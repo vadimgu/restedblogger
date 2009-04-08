@@ -43,13 +43,6 @@ def crop(image_file, bgcolor=ImageColor.getrgb("white")):
   new_image.save(image_file,"png")
 
 
-if __name__ == '__main__':
-  input = sys.argv[1]
-  crop = autocrop(Image.open(input),ImageColor.getrgb("white"))
-  crop.save('out.png',"PNG")
-
-
-
 def lilypond_directive(name, arguments, options, content, lineno,
                        content_offset, block_text, state, state_machine):
 
