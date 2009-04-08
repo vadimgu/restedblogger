@@ -1,3 +1,5 @@
+RestedBlogger
+=============
 
 .. contents:: Table of Contents
   :depth: 2
@@ -119,6 +121,21 @@ To include plots in a post you must install `gnuplot
     plot sin(x), cos(x)
 
 This will write the plot to `sincos.png` file and include it in the post.
+
+
+Plugins
+-------
+
+You can write your own plugins. Plugins are simple python files extending the
+reStructuredText_ functionality. To enable a plugin put it into
+`~/.restedblogger/plugins/`. There is an example in the sources
+`plugins/lilypond-directive.py`. It allows to write music using `Lilypond
+<http://lilypond.org>`_. ::
+
+  $ mkdir -p ~/.restedblogger/plugins
+  $ cp restedblogger/plugins/lilypond_directive.py ~/.restedblogger/plugins
+
+This will enable the `lilypond` directive. The dependencies for plugins are not managed and any additional package used by a plugin must be installed manually.
 
 
 
