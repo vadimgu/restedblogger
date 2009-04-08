@@ -6,6 +6,11 @@ from docutils import core
 import sourcecode_directive
 import wikipedia_reference_role
 import gnuplot_directive
+#import lilypond_directive
+
+import plugin
+
+plugin.load_plugins()
 
 
 def rest2html(source,initial_header_level=4):
