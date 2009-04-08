@@ -72,7 +72,8 @@ class Blogger(object):
       links = self.image_storage.upload(image['src'],'Blogger')
       #width,height,url = links[0]
       # dealing with blogger limitation on image size.
-      for width,height,url in reversed(links):
+      links.sort(reverse=True)
+      for width,height,url in links:
         if width <= 400 and height <= 400:
           image['src'] = url
           break
