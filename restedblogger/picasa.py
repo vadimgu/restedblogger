@@ -50,8 +50,8 @@ class Picasa(object):
     for photo in photos.entry:
       if photo.title.text == filename:
         image = photo
-        # Update the blob if local image is newer
-        #if image.updated > 
+        # Update the blob TODO: if local image is newer
+        #if image.updated.text > file's change time 
         self.client.UpdatePhotoBlob(photo,filename)
         print "U %s" % filename
         break;

@@ -1,48 +1,54 @@
 #!/usr/bin/python
-import os
-import sys
-import getpass
-import ConfigParser
-import optparse
-import string
-import webbrowser 
-
 from gdata import service
 import gdata
 import atom
-
+import os
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
-import rested
-import imageservice
+from picasa import Picasa
 
 class Blogger(object):
-  def __init__(self,email=None,password=None,blog_id=None,account_type='GOOGLE',image_storage=None):
+  source='restedblogger'
+  service='blogger'
+  account_type='GOOGLE'
+  server = 'www.blogger.com'
+
+  # Start header from <h4>
+  initial_header_level=4
+
+  
+
+  def __init__(self,email=None,password=None,blog_id=None):
     blogger = service.GDataService(email,password)
-    blogger.source = 'restedblogger'
-    blogger.service = 'blogger'
-    blogger.account_type = account_type
-    blogger.server = 'www.blogger.com'
-    blogger.ProgrammaticLogin()
+    blogger.source = self.source
+    blogger.service = self.service
+    blogger.account_type = self.account_type
+    blogger.server = self.server
+    if password:
+      blogger.ProgrammaticLogin()
     
     self.blogger = blogger
-    self._blog_id = blog_id
-    if image_storage:
-      self.image_storage = image_storage(email,password)
-    else:
-      self.image_storage = None
+    
+    self.email = email
+    self.password = password
+    self.blog_id = blog_id
 
+  
+    
 
-  def get_blog_id(self):
-    if self._blog_id:
-      return self._blog_id
+  def get_blogs(self):
     query = service.Query()
     query.feed = '/feeds/default/blogs'
     feed = self.blogger.Get(query.ToUri())
-    self._blog_id = feed.entry[0].GetSelfLink().href.split("/")[-1]
-    return self._blog_id
-  blog_id = property(get_blog_id)
+    for entry in feed.entry:
+      blog_id = entry.GetSelfLink().href.split("/")[-1]
+      title = entry.title.text
+      yield blog_id,title
+
+  blogs = property(get_blogs)
+
+
 
   def query(self,maximum=10):
     query = service.Query()
@@ -68,16 +74,19 @@ class Blogger(object):
     """Search for local images in the html, upload them and replace image src
     with the uploaded url."""
     soup = BeautifulSoup(html)
-    for image in soup.findAll('img',src=os.path.isfile):
-      links = self.image_storage.upload(image['src'],'Blogger')
-      #width,height,url = links[0]
-      # dealing with blogger limitation on image size.
-      links.sort(reverse=True)
-      for width,height,url in links:
-        if width <= 400 and height <= 400:
-          image['src'] = url
-          break
-            
+    images =  soup.findAll('img',src=os.path.isfile)
+    if images:
+      picasa = Picasa(self.email,self.password)
+      for image in images:
+        links = picasa.upload(image['src'],'Blogger')
+        #width,height,url = links[0]
+        # dealing with blogger limitation on image size.
+        links.sort(reverse=True)
+        for width,height,url in links:
+          if width <= 400 and height <= 400:
+            image['src'] = url
+            break
+              
     return str(soup)
     
 
@@ -121,126 +130,4 @@ class Blogger(object):
         replaceWith('<div class="post-body entry-conent">$body</div>')
       
       return str(soup)
-
-
-
-def createConfigDialog(configFileName='restedblogger.conf'):
-  """ Prompt the user for configuration """
-  email = raw_input("Email Address:")
-  config = ConfigParser.ConfigParser()
-  config.add_section('blogger')
-  config.set('blogger','email',email)
-  configFile = open(configFileName,'w+')
-  config.write(configFile)
-  configFile.close()
-  return config
-
-
-def getPassword(config,email):
-  """Prompt user for password if needed"""
-  password = None
-  if config.has_option('blogger','password'):
-    password = config.get('blogger','password')
-  else:
-    password = getpass.getpass("password for %s:" % email)
-  return password
-
-defaultTemplate = """
-<html>
-  <head>
-    <title>$title</title>
-  </head>
-  <body>
-  <h1>$title</h1>
-  $body
-  </body>
-</html>
-"""
-
-def main():
-  # Parsing command line options
-  # ----------------------------
-  usage = "usage: %prog [options] restFile"
-  parser = optparse.OptionParser(usage=usage)
-  parser.add_option("-c","--config",dest="config",default="restedblogger.conf",
-                     help="Config File", metavar='CONFIG')
-  parser.add_option("-v","--preview",dest="preview",action="store_true",default=False,
-                    help="Preview the content in a browser and will not post the content to blogger.")
-  parser.add_option("-P","--publish",dest="publish",action="store_true",default=False,
-                    help="Publish an existing draft or a new post")
-
-  parser.add_option("-t","--fetch-template",dest="fetchtemplate",action="store_true",default=False,
-                    help="Tries to fetch a template and save it under template.html")
-
-  (options,args) = parser.parse_args()
-  
-  # Reading the config
-  # ------------------
-  config = ConfigParser.ConfigParser()
-  readFiles = config.read(options.config)
-  
-  # config is unused if in preview, so no need to bug the user
-  if not readFiles and not options.preview:
-    config = createConfigDialog(options.config)
-  email = options.preview or config.get('blogger','email')
-
-  
-  # Upload the post
-  # ---------------
-  if len(args) >= 1:
-    rstFileName =  args[0]
-    rstText = open(rstFileName,'r').read()
-    rst_title,body = rested.rest2html(rstText)
-    
-    if options.preview:
-      if os.path.isfile('template.html'):
-        tplFile = open('template.html','r')
-        template = string.Template(tplFile.read())
-        tplFile.close()
-      else:
-        template = string.Template(defaultTemplate)
-      htmlFileName = rstFileName + ".html"
-      htmlFile = open(htmlFileName,'w+')
-      htmlFile.write(template.safe_substitute(title=rst_title,body=body))
-      htmlFile.close()
-      webbrowser.open("file://" + os.path.abspath(htmlFileName))
-    
-    else:  
-      password = getPassword(config,email) 
-      blogger = Blogger(email,password,image_storage=imageservice.Picasa)
-      # Update an existing post
-      for id,title,updated,content,entry in blogger.query():
-        if title == rst_title:
-          print "U %s" % rst_title
-          blogger.updatePost(entry,body,options.publish)
-          break
-      # Or create new post
-      else:
-        print "A %s" % rst_title
-        blogger.createPost(rst_title,body,options.publish)
-        
-     
-  
-  elif options.fetchtemplate:
-    print "Fetching Template" 
-    blogger = Blogger(email,getPassword(config,email))
-    template = blogger.fetchTemplate()
-
-    ftemplate = open('template.html','w+')
-    ftemplate.write(template)
-    ftemplate.close()
-
-  # Or list the last n posts
-  # ------------------------
-  else:
-    blogger = Blogger(email,getPassword(config,email))
-    for id,title,updated,content,entry in blogger.query():
-      print id,updated[0:10],title
-
-
-if __name__ == '__main__':
-  main()
-
-
-
 

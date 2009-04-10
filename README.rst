@@ -14,8 +14,10 @@ format to HTML and post it to `blogger <http://www.blogger.com>`_ (aka blogspot)
 Installation
 ------------
 
-To install from sources, it's the usual ::
+To install from sources ::
 
+  $ git clone git://github.com/vadimgu/restedblogger
+  $ cd restedblogger
   $ python setup.py install
 
 
@@ -54,10 +56,11 @@ using the `-t` flag ::
 
   $ restedblogger -t
 
-As soon as a communication to blogger_ is required you will be prompted to enter
-your email and password. The email will be stored in the configuration file
-`./restedblogger.conf`. The password IS NOT stored and will be prompted on each
-interaction with the blogger_ site.
+As soon as a communication to blogger_ is required you will be prompted to
+enter your email, password and select the blog.  The email and the selected
+blog will be stored in the configuration file `./restedblogger.conf`. The
+password IS NOT stored and will be prompted on each interaction with the
+blogger_ site.
 
 Once you're satisfied with the results you can send the post ::
 
@@ -135,7 +138,8 @@ reStructuredText_ functionality. To enable a plugin put it into
   $ mkdir -p ~/.restedblogger/plugins
   $ cp restedblogger/plugins/lilypond_directive.py ~/.restedblogger/plugins
 
-This will enable the `lilypond` directive. The dependencies for plugins are not managed and any additional package used by a plugin must be installed manually.
+This will enable the `lilypond` directive. The dependencies for plugins are not
+managed and any additional package used by a plugin must be installed manually.
 
 
 

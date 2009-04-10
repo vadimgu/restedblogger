@@ -9,12 +9,12 @@ requirements = [
 
 setup(
   name = "RestedBlogger",
-  version = "0.0.3",
+  version = "0.0.5",
   packages = find_packages(),
   install_requires = requirements,
   entry_points = {
     'console_scripts':[
-      'restedblogger = restedblogger.blogger:main'
+      'restedblogger = restedblogger.restedblogger:main'
       ]
   },
   author = "Vadim Gubergrits",
