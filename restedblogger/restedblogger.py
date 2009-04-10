@@ -138,7 +138,6 @@ def main():
       webbrowser.open("file://" + os.path.abspath(htmlFileName))
     
     else:  
-      password = getPassword(config,email) 
       blogger = Blogger(email,password,blog_id)
       # Update an existing post
       for id,title,updated,content,entry in blogger.query():
@@ -155,7 +154,6 @@ def main():
   
   elif options.fetchtemplate:
     print "Fetching Template"
-    password = getPassword(config,email) 
     blogger = Blogger(email,password,blog_id)
     template = blogger.fetchTemplate()
 
@@ -166,7 +164,6 @@ def main():
   # Or list the last 10 posts
   # ------------------------
   else:
-    password = getPassword(config,email)
     blogger = Blogger(email,password,blog_id)
     for id,title,updated,content,entry in blogger.query(10):
       print id,updated[0:10],title
