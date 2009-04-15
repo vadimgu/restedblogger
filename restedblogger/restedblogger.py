@@ -44,7 +44,7 @@ def createConfigDialog(configFileName='restedblogger.conf'):
   configFile = open(configFileName,'w+')
   config.write(configFile)
   configFile.close()
-  print "Wrote config to %s" % os.path.abspath(configFileName)
+  print "Configuration saved to %s" % os.path.abspath(configFileName)
   
   # password is not written to the file
   config.set('blogger','password',password)
@@ -122,7 +122,7 @@ def main():
   if len(args) >= 1:
     rstFileName =  args[0]
     rstText = open(rstFileName,'r').read()
-    rst_title,body = rested.rest2html(rstText)
+    parts = rested.publish_blog_parts(rstText)
     
     if options.preview:
       if os.path.isfile('template.html'):
@@ -133,7 +133,7 @@ def main():
         template = string.Template(defaultTemplate)
       htmlFileName = rstFileName + ".html"
       htmlFile = open(htmlFileName,'w+')
-      htmlFile.write(template.safe_substitute(title=rst_title,body=body))
+      htmlFile.write(template.safe_substitute(title=parts['title'],body=parts['html_body_no_title']))
       htmlFile.close()
       webbrowser.open("file://" + os.path.abspath(htmlFileName))
     
@@ -141,14 +141,14 @@ def main():
       blogger = Blogger(email,password,blog_id)
       # Update an existing post
       for id,title,updated,content,entry in blogger.query():
-        if title == rst_title:
-          print "U %s" % rst_title
-          blogger.updatePost(entry,body,options.publish)
+        if title == parts['title']:
+          print "U %s" % parts['title']
+          blogger.updatePost(entry,parts,options.publish)
           break
       # Or create new post
       else:
-        print "A %s" % rst_title
-        blogger.createPost(rst_title,body,options.publish)
+        print "A %s" % parts['title']
+        blogger.createPost(parts,options.publish)
         
      
   

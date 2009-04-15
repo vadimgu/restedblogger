@@ -13,6 +13,7 @@ class Blogger(object):
   service='blogger'
   account_type='GOOGLE'
   server = 'www.blogger.com'
+  category_scheme="http://www.blogger.com/atom/ns#"
 
   # Start header from <h4>
   initial_header_level=4
@@ -88,12 +89,17 @@ class Blogger(object):
             break
               
     return str(soup)
-    
+  
 
-  def createPost(self, title, content, publish=False):
+  def createPost(self,parts,publish=False):
     entry = gdata.GDataEntry()
-    entry.title = atom.Title('xhtml', title)
-    content = self.upload_images(content)
+    entry.title = atom.Title('xhtml', parts['title'])
+
+    entry.category = [atom.Category(term=tag.strip(),scheme=self.category_scheme) 
+                      for tag in parts['tags'].split(',')]
+
+    content = self.upload_images(parts['html_body_no_title'])
+
     entry.content = atom.Content(content_type='html', text=content)
     if not publish:
       # switching the draft mode on
@@ -102,15 +108,20 @@ class Blogger(object):
       entry.control = control
     return self.blogger.Post(entry, '/feeds/%s/posts/default' % self.blog_id)
   
-  def updatePost(self,entry,content,publish=False):
+  def updatePost(self,entry,parts,publish=False):
     entry = self.blogger.Get(entry.GetSelfLink().href)
-    content = self.upload_images(content)
+    content = self.upload_images(parts['html_body_no_title'])
     entry.content = atom.Content(content_type='html', text=content)
     if publish: 
       # switching the draft mode off
       control = atom.Control()
       control.draft = atom.Draft(text='no')
       entry.control = control
+
+    # tags
+    entry.category = [atom.Category(term=tag.strip(),scheme=self.category_scheme) 
+                      for tag in parts['tags'].split(',')]
+
     return self.blogger.Put(entry, entry.GetEditLink().href)
   
   def fetchTemplate(self):
