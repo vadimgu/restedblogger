@@ -27,13 +27,14 @@ Features
   * Create or Update a post
   * Publish a post.
   * Preview a post.
-  * Upload images in a post to `Picasa Web <http://picasaweb.google.com>`_
+  * Automatically  upload images in a post to `Picasa Web <http://picasaweb.google.com>`_
+  * Set the labels.
 
 
 Using RestedBlogger
 -------------------
 
-First write a post in reStructuredText_ format by editing postA.rst. ::
+First write a post in reStructuredText_ format by editing `myPost.rst`. ::
 
   My Rested Post
   ==============
@@ -45,7 +46,7 @@ First write a post in reStructuredText_ format by editing postA.rst. ::
 
 You can preview the post using the `-v` flag ::
 
-  $ restedblogger -v postA.rst
+  $ restedblogger -v myPost.rst
 
 This will open the default browser with the generated html. It will NOT post to
 blogger_. 
@@ -64,15 +65,19 @@ blogger_ site.
 
 Once you're satisfied with the results you can send the post ::
 
-  $ restedblogger postA.rst
+  $ restedblogger myPost.rst
 
 This will create a new post in draft mode or update an existing one. Can be
 executed many times.
 
+.. warning::
+  The posts are identified by their titles. If the title of a post is changed
+  it will be considered as a new post.
+
 
 To publish the post::
 
-  $ restedblogger -P postA.rst
+  $ restedblogger -P myPost.rst
 
 This will create or update the post and set off the draft mode. Setting the
 draft mode back to on is not implemented.
@@ -124,6 +129,17 @@ To include plots in a post you must install `gnuplot
     plot sin(x), cos(x)
 
 This will write the plot to `sincos.png` file and include it in the post.
+
+Post Tags 
+~~~~~~~~~
+
+To set the post tags use the `meta` directive::
+
+  .. meta::
+    :keywords: Text, Power
+
+.. note::
+  The `meta` directive is a reStructuredText_ directive, not a custom one. 
 
 
 Plugins
