@@ -4,11 +4,12 @@ RestedBlogger
 .. contents:: Table of Contents
   :depth: 2
 
-What It Does
-------------
+What is RestedBlogger
+---------------------
 
-Transfroms a file from `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ 
-format to HTML and post it to `blogger <http://www.blogger.com>`_ (aka blogspot).
+RestedBlogger is a command line application that can transform a
+`reStructuredText <http://docutils.sourceforge.net/rst.html>`_ 
+file into HTML and post it to `Blogger <http://www.blogger.com>`_ (aka Blogspot).
 
 
 Installation
@@ -27,14 +28,26 @@ Features
   * Create or Update a post
   * Publish a post.
   * Preview a post.
-  * Automatically  upload images in a post to `Picasa Web <http://picasaweb.google.com>`_
+  * Automatically upload images in a post to `Picasa Web <http://picasaweb.google.com>`_
   * Set the labels.
 
 
 Using RestedBlogger
 -------------------
 
-First write a post in reStructuredText_ format by editing `myPost.rst`. ::
+First you have to make a folder where you will be editing your posts. ::
+
+  $ mkdir myblog
+  $ cd myblog
+  $ reb init
+
+The `init` command will ask you your email, your password and will also ask you
+to choose a blog, if you have more then one. Then, that information is saved in
+`reb.conf` file. The password IS NOT stored and will be prompted on each
+interaction with the Blogger_ site.
+
+
+The next step is to write a blog post by editing a text file `myPost.rst` ::
 
   My Rested Post
   ==============
@@ -44,40 +57,33 @@ First write a post in reStructuredText_ format by editing `myPost.rst`. ::
   .. image:: proof.jpg
 
 
-You can preview the post using the `-v` flag ::
+You can preview the post with the `reb view` command ::
 
-  $ restedblogger -v myPost.rst
+  $ reb view myPost.rst
 
 This will open the default browser with the generated html. It will NOT post to
-blogger_. 
+Blogger_. 
 
 
-RestedBlogger can fetch your last post and make it into a template for preview
-using the `-t` flag :: 
+RestedBlogger can fetch your last post and make it into a template for preview :: 
 
-  $ restedblogger -t
-
-As soon as a communication to blogger_ is required you will be prompted to
-enter your email, password and select the blog.  The email and the selected
-blog will be stored in the configuration file `./restedblogger.conf`. The
-password IS NOT stored and will be prompted on each interaction with the
-blogger_ site.
+  $ reb template
 
 Once you're satisfied with the results you can send the post ::
 
-  $ restedblogger myPost.rst
+  $ reb draft myPost.rst
 
 This will create a new post in draft mode or update an existing one. Can be
 executed many times.
 
-.. warning::
+.. attention::
   The posts are identified by their titles. If the title of a post is changed
   it will be considered as a new post.
 
 
 To publish the post::
 
-  $ restedblogger -P myPost.rst
+  $ reb publish myPost.rst
 
 This will create or update the post and set off the draft mode. Setting the
 draft mode back to on is not implemented.
@@ -130,22 +136,22 @@ To include plots in a post you must install `gnuplot
 
 This will write the plot to `sincos.png` file and include it in the post.
 
-Post Tags 
-~~~~~~~~~
+Post Labels
+~~~~~~~~~~~
 
-To set the post tags use the `meta` directive::
+To set the post labels use the `meta` directive::
 
   .. meta::
     :keywords: Text, Power
 
 .. note::
-  The `meta` directive is a reStructuredText_ directive, not a custom one. 
+  The `meta` directive is a standard reStructuredText_ directive. 
 
 
 Plugins
 -------
 
-You can write your own plugins. Plugins are simple python files extending the
+You can write your own plugins. Plugins are python modules extending the
 reStructuredText_ functionality. To enable a plugin put it into
 `~/.restedblogger/plugins/`. There is an example in the sources
 `plugins/lilypond-directive.py`. It allows to write music using `Lilypond

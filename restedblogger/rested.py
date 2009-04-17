@@ -7,25 +7,26 @@ from docutils.parsers.rst.directives.html import MetaBody
 
 # Custom Directives and Roles
 # ---------------------------
-import sourcecode_directive
-import wikipedia_reference_role
-import gnuplot_directive
+from restedblogger import sourcecode_directive
+from restedblogger import wikipedia_reference_role
+from restedblogger import gnuplot_directive
 
 
 
  
 def publish_blog_parts(source, source_path=None, source_class=io.StringInput,
-                  destination_path=None,
-                  reader=None, reader_name='standalone',
-                  parser=None, parser_name='restructuredtext',
-                  writer=None, writer_name='html',
-                  settings=None, settings_spec=None,
-                  settings_overrides={'input_encoding': 'utf8', 'doctitle_xform': 1,}, 
-                  config_section=None,
-                  enable_exit_status=None,
-                  initial_header_level=4,):
+      destination_path=None,
+      reader=None, reader_name='standalone',
+      parser=None, parser_name='restructuredtext',
+      writer=None, writer_name='html',
+      settings=None, settings_spec=None,
+      settings_overrides={'input_encoding': 'utf8', 'doctitle_xform': 1,}, 
+      config_section=None,
+      enable_exit_status=None,
+      initial_header_level=4,):
     """
-    This is a copy of core.publish_parts() with additional information in the returned parts.
+    This is a copy of docutils.core.publish_parts() with additional information
+    in the returned parts.
     
       - parts['tags'] : Tags are extracted from the meta directive.
       - parts['body_html_no_title'] : The body_html without the title.
@@ -54,7 +55,9 @@ def publish_blog_parts(source, source_path=None, source_class=io.StringInput,
         break
 
     # Body without Title
-    parts['html_body_no_title'] = parts['html_body'].replace(parts['html_title'],'')
+    body = parts['html_body']
+    title = parts['html_title']
+    parts['html_body_no_title'] = body.replace(title,'')
         
     return parts
 

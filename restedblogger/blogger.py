@@ -1,12 +1,14 @@
 #!/usr/bin/python
-from gdata import service
-import gdata
-import atom
 import os
 import urllib2
+
+import gdata
+import atom
+from gdata import service
 from BeautifulSoup import BeautifulSoup
 
-from picasa import Picasa
+from restedblogger.picasa import Picasa
+
 
 class Blogger(object):
   source='restedblogger'
@@ -18,8 +20,6 @@ class Blogger(object):
   # Start header from <h4>
   initial_header_level=4
 
-  
-
   def __init__(self,email=None,password=None,blog_id=None):
     blogger = service.GDataService(email,password)
     blogger.source = self.source
@@ -28,28 +28,22 @@ class Blogger(object):
     blogger.server = self.server
     if password:
       blogger.ProgrammaticLogin()
-    
     self.blogger = blogger
-    
     self.email = email
     self.password = password
     self.blog_id = blog_id
-
-  
-    
 
   def get_blogs(self):
     query = service.Query()
     query.feed = '/feeds/default/blogs'
     feed = self.blogger.Get(query.ToUri())
+    blogs = []
     for entry in feed.entry:
       blog_id = entry.GetSelfLink().href.split("/")[-1]
       title = entry.title.text
-      yield blog_id,title
-
+      blogs.append((blog_id,title))
+    return blogs
   blogs = property(get_blogs)
-
-
 
   def query(self,maximum=10):
     query = service.Query()
@@ -70,7 +64,6 @@ class Blogger(object):
     feed = self.blogger.GetFeed(query.ToUri())
     return feed.entry[0]
   
-
   def upload_images(self,html):
     """Search for local images in the html, upload them and replace image src
     with the uploaded url."""
@@ -89,14 +82,12 @@ class Blogger(object):
             break
               
     return str(soup)
-  
 
   def createPost(self,parts,publish=False):
     entry = gdata.GDataEntry()
     entry.title = atom.Title('xhtml', parts['title'])
-
-    entry.category = [atom.Category(term=tag.strip(),scheme=self.category_scheme) 
-                      for tag in parts['tags'].split(',')]
+    tags = [tag.strip() for tag in parts['tags'].split(',')]
+    entry.category = [atom.Category(term=tag,scheme=self.category_scheme) for tag in tags]
 
     content = self.upload_images(parts['html_body_no_title'])
 
@@ -106,6 +97,7 @@ class Blogger(object):
       control = atom.Control()
       control.draft = atom.Draft(text='yes')
       entry.control = control
+
     return self.blogger.Post(entry, '/feeds/%s/posts/default' % self.blog_id)
   
   def updatePost(self,entry,parts,publish=False):
@@ -118,9 +110,8 @@ class Blogger(object):
       control.draft = atom.Draft(text='no')
       entry.control = control
 
-    # tags
-    entry.category = [atom.Category(term=tag.strip(),scheme=self.category_scheme) 
-                      for tag in parts['tags'].split(',')]
+    tags = [tag.strip() for tag in parts['tags'].split(',')]
+    entry.category = [atom.Category(term=tag,scheme=self.category_scheme) for tag in tags]
 
     return self.blogger.Put(entry, entry.GetEditLink().href)
   
