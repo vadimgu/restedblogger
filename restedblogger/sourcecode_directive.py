@@ -33,6 +33,17 @@
 
   :copyright: Copyright 2006-2009 by the Pygments team, see AUTHORS.
   :license: BSD, see LICENSE for details.
+
+
+  Options
+  ~~~~~~~
+
+  To include a file and highlight its source use the :file: option::
+    
+    .. sourcecode:: python
+      :file: source.py
+
+
 """
 
 # Options
@@ -65,13 +76,22 @@ def pygments_directive(name, arguments, options, content, lineno,
   except ValueError:
     # no lexer found - use the text one instead of an exception
     lexer = TextLexer()
-  # take an arbitrary option if more than one is given
-  formatter = options and VARIANTS[options.keys()[0]] or DEFAULT
+
+  formatter = DEFAULT
+  # :linenos:
+  if 'linenos' in options:
+    formatter = VARIANTS['linenos']
+
+  # :file: source.py
+  if 'file' in options:
+    content = (line[:-1] for line in open(options['file'],'r'))
   parsed = highlight(u'\n'.join(content), lexer, formatter)
   return [nodes.raw('', parsed, format='html')]
 
 pygments_directive.arguments = (1, 0, 1)
 pygments_directive.content = 1
-pygments_directive.options = dict([(key, directives.flag) for key in VARIANTS])
+pygments_directive.options = dict(
+  linenos=directives.flag, 
+  file=directives.path)
 
 directives.register_directive('sourcecode', pygments_directive)
