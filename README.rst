@@ -47,7 +47,7 @@ to choose a blog, if you have more then one. Then, that information is saved in
 interaction with the Blogger_ site.
 
 
-The next step is to write a blog post by editing a text file `myPost.rst` ::
+The next step, is to write a blog post by editing a text file `myPost.rst` ::
 
   My Rested Post
   ==============
@@ -106,7 +106,7 @@ Highlight source code using `Pygments <http://pygments.org>`_ ::
 
   .. sourcecode:: python
   
-    def count(start):
+    def count(start=0):
       yield start
       while 1:
         start += 1
