@@ -7,9 +7,10 @@ RestedBlogger
 What is RestedBlogger
 ---------------------
 
-RestedBlogger is a command line application that can transform a
-`reStructuredText <http://docutils.sourceforge.net/rst.html>`_ 
-file into HTML and post it to `Blogger <http://www.blogger.com>`_ (aka Blogspot).
+RestedBlogger is a command line application that can publish a
+`reStructuredText <http://docutils.sourceforge.net/rst.html>`_ to `Blogger
+<http://www.blogger.com>`_. It will also upload images that are
+included in your document.
 
 
 Installation
@@ -41,16 +42,16 @@ First you have to make a folder where you will be editing your posts. ::
   $ cd myblog
   $ reb init
 
-The `init` command will ask you your email, your password and will also ask you
-to choose a blog, if you have more then one. Then, that information is saved in
-`reb.conf` file. The password IS NOT stored and will be prompted on each
-interaction with the Blogger_ site.
+The `init` command will ask you your google email, your password and will also
+ask you to choose a blog, if you have more then one. Then, that information is
+saved in `reb.conf` file. The password IS NOT stored and will be prompted on
+each interaction with the Blogger_ site.
 
 
 The next step, is to write a blog post by editing a text file `myPost.rst` ::
 
-  My Rested Post
-  ==============
+  My ReStructuredText Post
+  ========================
 
   Text is power. I'm using this image to prove it:
 
@@ -69,11 +70,11 @@ RestedBlogger can fetch your last post and make it into a template for preview :
 
   $ reb template
 
-Once you're satisfied with the results you can send the post ::
+Once you're satisfied with the results you can send the piece ::
 
   $ reb draft myPost.rst
 
-This will create a new post in draft mode or update an existing one. Can be
+This will create a new post in draft mode or update an existing one. It can be
 executed many times.
 
 .. attention::
