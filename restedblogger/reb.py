@@ -49,7 +49,7 @@ def locate_base(name='reb.conf',path=os.getcwd()):
   locate_base() -> base_path or None
   """
   for location in walk_up(path):
-    config = os.path.join(path,name)
+    config = os.path.join(location,name)
     if os.path.isfile(config):
       return location
     
@@ -100,8 +100,8 @@ def view(parts,template,rstFileName):
   htmlFileName = rstFileName + ".html"
   htmlFile = open(htmlFileName,'w+')
   htmlFile.write(template.safe_substitute(
-    title=parts['title'],
-    body=parts['html_body_no_title']))
+    title=parts['title'].encode('utf-8'),
+    body=parts['html_body_no_title'].encode('utf-8')))
   htmlFile.close()
   webbrowser.open("file://" + os.path.abspath(htmlFileName))
 
@@ -147,7 +147,7 @@ reb template
 
 reb view FILE
 
-  Preview the FILE with a template. If no template was found use a dummy template.
+  Preview the FILE in a template. If no template was found use a dummy template.
 
 reb draft FILE
 
@@ -162,7 +162,7 @@ reb publish FILE
   parser = optparse.OptionParser(usage=usage)
    
   parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=False,
-                     help="Config File", metavar='CONFIG')
+                     help="Enable verbose mode")
 
   (options,args) = parser.parse_args()
   
@@ -226,19 +226,17 @@ reb publish FILE
   if command == 'template':
     destination = os.path.join(base,'template.html')
     fetch_template(email,password,blog_id,destination)
-    return
 
   # reb list
-  if command == 'list':
+  elif command == 'list':
     list(email,password,blog_id)
-    return 
 
   # reb publish FILE
-  if command == 'publish':
+  elif command == 'publish':
     publish(parts,email,password,blog_id)
     
   # reb draf FILE
-  if command == 'draft':
+  elif command == 'draft':
     draft(parts,email,password,blog_id)
   
 if __name__ == '__main__':
