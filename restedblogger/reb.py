@@ -131,33 +131,15 @@ def draft(parts,email,password,blog_id):
 def main():
   # Parsing command line options
   # ----------------------------
-  usage = """usage:
+  usage = """usage: reb COMMAND [ARGS]
   
-reb init
-  
-  Enable restedblogger in the current folder
-
-reb list
-
-  List the last ten blogs
-
-reb template
-
-  Fetch the last blog post and save it as a template.
-
-reb view FILE
-
-  Preview the FILE in a template. If no template was found use a dummy template.
-
-reb draft FILE
-
-  Publish the FILE to Blogger in a draft mode
-
-reb publish FILE
-  
-  Publish the FILE to Blogger
-
-  """
+The commands are:
+  init          Enable restedblogger in the current folder.
+  list          List the last ten blogs.
+  template      Fetch the last blog post and save it as a template.
+  view    FILE  Preview the FILE in a template. If no template was found use a dummy template.
+  draft   FILE  Publish the FILE to Blogger in a draft mode.
+  publish FILE  Publish the FILE to Blogger."""
 
   parser = optparse.OptionParser(usage=usage)
    
@@ -172,8 +154,12 @@ reb publish FILE
     level = logging.DEBUG
   logging.basicConfig(format="%(message)s",level=level)
 
+  if not args:
+    print usage
+    return
 
   command = args[0]
+
 
   configFile = 'reb.conf'
   
