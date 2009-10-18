@@ -86,7 +86,10 @@ class Blogger(object):
   def createPost(self,parts,publish=False):
     entry = gdata.GDataEntry()
     entry.title = atom.Title('xhtml', parts['title'])
-    tags = [tag.strip() for tag in parts['tags'].split(',')]
+    if parts['tags']:
+      tags = [tag.strip() for tag in parts['tags'].split(',')]
+    else:
+      tags = []
     entry.category = [atom.Category(term=tag,scheme=self.category_scheme) for tag in tags]
 
     content = self.upload_images(parts['html_body_no_title'])
@@ -109,8 +112,10 @@ class Blogger(object):
       control = atom.Control()
       control.draft = atom.Draft(text='no')
       entry.control = control
-
-    tags = [tag.strip() for tag in parts['tags'].split(',')]
+    if parts['tags']:
+      tags = [tag.strip() for tag in parts['tags'].split(',')]
+    else:
+      tags = []
     entry.category = [atom.Category(term=tag,scheme=self.category_scheme) for tag in tags]
 
     return self.blogger.Put(entry, entry.GetEditLink().href)
